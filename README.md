@@ -1,5 +1,6 @@
 # biological_neurons
 A collection of Python scripts to implement biological models of neurons using Python. 
+Numpy, matplotlib, scipy as well as celluloid package were used to animate the output. 
 
 ## Hudgkin & Huxley Model
 
@@ -18,10 +19,12 @@ cell.simulate(V_init=-10, n_init=0, m_init=0, h_init=1, Tmax=50, inj = 15)
 ![HH simulation](Demo/HHsimulation.gif)
 
 
-## Fitzugh & Nagumo Model
+## ToDo : 
+
+### Fitzugh & Nagumo Model
 
 *Coming Soon*
 
-## Hindmarsh & Rose Model
+### Hindmarsh & Rose Model
 
 *Coming Soon*
