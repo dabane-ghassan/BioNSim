@@ -5,11 +5,12 @@ Numpy, matplotlib, scipy as well as celluloid package were used to animate the o
 ## Hudgkin & Huxley Model
 
 ### Input
+- For each ion, G is the conductance and Eq is the equilibrium potential.
 ```python
 import hudgkin_huxley as hh
 
 cell = hh.Neuron(voltage=np.linspace(-150, 150, 100), 
-                 sodium={'G' : 120., 'Eq' : 120.},  # Conductance and equilibrium potential as parameters respectively
+                 sodium={'G' : 120., 'Eq' : 120.}, 
                  potassium={'G' : 36., 'Eq' : -12.},
                  leak={'G' : 0.3,'Eq' :10.6})
 
