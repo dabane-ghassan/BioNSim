@@ -1,4 +1,5 @@
-# biological_neurons
+# BioNSim
+
 A collection of Python scripts to implement biological models of neurons using Python. 
 Numpy, matplotlib, scipy as well as celluloid package were used to animate the output. 
 
@@ -31,7 +32,8 @@ cell.simulate_hind_rose(x_init=-1.5, y_init=-10, z_init=2, Tmax=1000)
 
 ![HR simulation](Demo/HRsimulation.gif)
 
-## ToDo : 
+## ToDo :
+This project is still in developement.
 
 ### Fitzugh & Nagumo Model
 
