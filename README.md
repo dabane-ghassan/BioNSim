@@ -40,15 +40,16 @@ import fitzugh-nagumo as fn
 cell = fn.Neuron(a=0.7, b=0.8, tau=13)
   
 cell.simulate_fitz_nagu(V_init=-2,w_init=-1.5, I_init=0.5, Tmax=100)
-
+```
 ### Output
 
-![FN simulation](Demo/HRsimulation.gif)
+![FN simulation](Demo/FNsimulation.gif)
 
 
 ## ToDo :
 This project is still in developement.
 
-### IKir Model
+### Doing the animation with matplotlib instead of celluloid and applying it to the scripts
+### Writing the GUI
+### Adding more biological models : IKir, Izhikevich model, ......
 
-*Coming Soon*
