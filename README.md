@@ -29,15 +29,25 @@ cell = hr.Neuron(r = 0.001, s = 4, xr = -8/5, a = 1, b = 3, c = 1, d = 5, I = 2)
 
 cell.simulate_hind_rose(x_init=-1.5, y_init=-10, z_init=2, Tmax=1000)
 ``` 
-
+### Output
 ![HR simulation](Demo/HRsimulation.gif)
+
+
+## Fitzugh & Nagumo Model
+```python
+import fitzugh-nagumo as fn
+
+cell = fn.Neuron(a=0.7, b=0.8, tau=13)
+  
+cell.simulate_fitz_nagu(V_init=-2,w_init=-1.5, I_init=0.5, Tmax=100)
+
+### Output
+
+![FN simulation](Demo/HRsimulation.gif)
+
 
 ## ToDo :
 This project is still in developement.
-
-### Fitzugh & Nagumo Model
-
-*Coming Soon*
 
 ### IKir Model
 
