@@ -1,6 +1,6 @@
 # BioNSim
 
-A collection of Python scripts to implement biological models of neurons using Python. 
+Currently under construction, for the time being it consists of a collection of Python scripts to implement biological models of neurons using Python. 
 Numpy, matplotlib, scipy as well as celluloid package were used to animate the output. 
 
 ## Hudgkin & Huxley Model
