@@ -11,7 +11,7 @@ Hindmarsh-Rose model of the neuron
 
 import numpy as np
 import matplotlib.pyplot as plt
-from celluloid import Camera
+from matplotlib.animation import FuncAnimation
 from scipy.integrate import solve_ivp
 from mpl_toolkits.mplot3d import Axes3D
 
@@ -67,23 +67,29 @@ class Neuron():
     
         # And now let's create the animation
         fig = plt.figure(figsize=(12, 5), dpi=150)
-        cam = Camera(fig)
         ax1 = fig.add_subplot(121)
         ax2 = fig.add_subplot(122, projection='3d')
-        for i in range(len(tt)):
-            ax1.plot(tt[:i], tx[:i], 'r')
-            ax1.set_xlabel('t')
-            ax1.set_ylabel('$x$', rotation=0)
-            ax2.plot(tx[:i], ty[:i], tz[:i], 'b')
-            ax2.set_zlabel('$z$')
-            ax2.set_xlabel('$x$')
-            ax2.set_ylabel('$y$')
-            ax2.set_zlim(1.6,2.2)
-            fig.suptitle(
-                "Hindmarsh and Rose model Simulation \n Initial conditions : $x$ = %s, $y$ = %s, $z$ = %s"
-                % (x_init, y_init, z_init))
-            cam.snap()
-        cam.animate(blit=False, interval=40, repeat=True).save('HR.mp4')
-    
+        l2d, = ax1.plot(tt, tx, 'r')
+        ax1.set_xlabel('t')
+        ax1.set_ylabel('$x$', rotation=0)
+        l3d, = ax2.plot(tx, ty, tz, 'b')
+        ax2.set_zlabel('$z$')
+        ax2.set_xlabel('$x$')
+        ax2.set_ylabel('$y$')
+        ax2.set_zlim(1.6,2.2)
+        fig.suptitle(
+            "Hindmarsh and Rose model Simulation \n Initial conditions : $x$ = %s, $y$ = %s, $z$ = %s"
+            % (x_init, y_init, z_init))
+        
+        def animate(i) :
+            l2d.set_data(tt[:i], tx[:i])
+            data = np.array([tx,ty,tz]) # There is no set_data() for 3d plots
+            l3d.set_data(data[0:2, :i])
+            l3d.set_3d_properties(data[2, :i])
+            return l2d, l3d
+        
+        anim = FuncAnimation(fig, animate, frames=len(tt), interval = 50)
+        anim.save('HRsimulation.mp4', dpi = 150, fps= 30)
+  
     
 
