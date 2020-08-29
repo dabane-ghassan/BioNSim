@@ -10,10 +10,9 @@ Fitzugh-Nagumo model of the biological neuron
 
 import numpy as np
 import matplotlib.pyplot as plt
-from celluloid import Camera
+from matplotlib.animation import FuncAnimation
 from scipy.optimize import bisect
 from scipy.integrate import solve_ivp
-
 
 
 class Neuron() : 
@@ -89,35 +88,46 @@ class Neuron() :
     
         # Figure and axes
         fig, axes = plt.subplots(1, 2, figsize=(12, 5), dpi=150)
-        cam = Camera(fig)
-        # Animation
-        for i in range(len(tt)):
-            s1, = axes[0].plot(vt[:i], wt[:i], 'r')
-            ng1, = axes[0].plot(volt, self.vnull(volt, I=I_init), color="orange")
-            ng2, = axes[0].plot(volt, self.wnull(volt), 'b')
-            eq, = axes[0].plot(v_star, w_star, 'ko', label="Stable Node")
-            axes[0].quiver(x_arrs,y_arrs,self.vdot(x_arrs,y_arrs,I_init),
-                           self.wdot(x_arrs,y_arrs), color = 'green')
-            axes[0].legend(
-                [ng1, ng2, eq, s1],
-                ['$V$-nullcline', '$w$-nullcline', 'Equilibrium', 'Solution'])
-            axes[0].set_ylim(-2, +2)
-            axes[0].set_xlim(-3, 3)
-            axes[0].set_ylabel('$w$', rotation=0)
-            axes[0].set_xlabel('$V$')
-            axes[0].set_title('Phase portrait')
+
+        s1, = axes[0].plot(vt, wt, 'r')
+        ng1, = axes[0].plot(volt, self.vnull(volt, I=I_init), color="orange")
+        ng2, = axes[0].plot(volt, self.wnull(volt), 'b')
+        eq, = axes[0].plot(v_star, w_star, 'ko', label="Stable Node")
+        axes[0].quiver(x_arrs,y_arrs,self.vdot(x_arrs,y_arrs,I_init),
+                       self.wdot(x_arrs,y_arrs), color = 'green')
+        axes[0].legend(
+            [ng1, ng2, eq, s1],
+            ['$V$-nullcline', '$w$-nullcline', 'Equilibrium', 'Solution'],
+            loc = "upper right")
+        axes[0].set_ylim(-2, +2)
+        axes[0].set_xlim(-3, 3)
+        axes[0].set_ylabel('$w$', rotation=0)
+        axes[0].set_xlabel('$V$')
+        axes[0].set_title('Phase portrait')
+
+        vg, = axes[1].plot(tt, vt, color='orange')
+        wg, = axes[1].plot(tt, wt, 'b')
+        axes[1].legend([vg, wg], ['$V(t)$', '$w(t)$'])
+        axes[1].set_xlabel('Time')
+        axes[1].set_title('Numerical solution')
+        fig.suptitle(
+            "Fitzugh and Nagumo model Simulation, Initial conditions : $V$ = %s, $w$ = %s, $I$ = %s"
+            % (V_init, w_init, I_init))
+        
+        def animate(i) :
+
+            s1.set_data(vt[:i], wt[:i])
+            vg.set_data(tt[:i], vt[:i])
+            wg.set_data(tt[:i], wt[:i])
+            return s1, vg, wg 
+        
+        anim = FuncAnimation(fig, animate, interval = 100)
+        anim.save('FNsimulation.mp4', dpi = 150, fps= 30)
+ 
     
-            vg, = axes[1].plot(tt[:i], vt[:i], color='orange')
-            wg, = axes[1].plot(tt[:i], wt[:i], 'b')
-            axes[1].legend([vg, wg], ['$V(t)$', '$w(t)$'])
-            axes[1].set_xlabel('Time')
-            axes[1].set_title('Numerical solution')
-            fig.suptitle(
-                "Fitzugh and Nagumo model Simulation, Initial conditions : $V$ = %s, $w$ = %s, $I$ = %s"
-                % (V_init, w_init, I_init))
-            cam.snap()
-        cam.animate(blit=False, interval=30,
-                        repeat=True).save('fitz_nagu.mp4')
+
+
+
     
     
     
