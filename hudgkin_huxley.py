@@ -5,16 +5,16 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-from celluloid import Camera  # A module that will allow us to do plotting animations
-from scipy.integrate import solve_ivp  # This function will help with solving differential equations
+from matplotlib.animation import FuncAnimation
+from scipy.integrate import solve_ivp  
 
 
 class Neuron():
     """Hudgkin & Huxley Model of the excitable cell"""
     def __init__(self, voltage, sodium, potassium, leak):
         """This instantiates a Neuron object with the following properties
-        sodium, potassium and leak should be dictionaries with their conductance
-        and equilibrium potential as elements.
+        sodium, potassium and leak should be dictionaries with their
+        conductance and equilibrium potential as elements.
         """
         self.voltage = voltage
         self.Gna, self.Ena = sodium['G'], sodium['Eq']
@@ -62,7 +62,9 @@ class Neuron():
         return alpha / (alpha + beta)
 
     def INa(self):
-        """this calculates the sodium transient current using previous class methods."""
+        """this calculates the sodium transient current using previous
+        class methods.
+        """
         m = self.finfty(self.am(self.voltage), self.bm(self.voltage))
         h = self.finfty(self.ah(self.voltage), self.bh(self.voltage))
 
@@ -71,7 +73,9 @@ class Neuron():
         )  # Ohm's law for ion channels I = G*(V - Eeq)
 
     def IK(self):
-        """this calculates the potassium persistant current using previous class methods."""
+        """this calculates the potassium persistant current using previous
+        class methods.
+        """
         n = self.finfty(self.an(self.voltage), self.bn(self.voltage))
 
         return self.Gk * n**4. * (
@@ -90,25 +94,13 @@ class Neuron():
         tm = self.tau(self.am(self.voltage), self.bm(self.voltage))
         th = self.tau(self.ah(self.voltage), self.bh(self.voltage))
         fig, ax = plt.subplots(dpi=150)
-        cam1 = Camera(fig)
-        for s in range(len(
-                self.voltage)):  # For loop to create the plotting animation
-
-            t1, t2, t3 = plt.plot(self.voltage[:s],
-                                  tm[:s],
-                                  'r',
-                                  self.voltage[:s],
-                                  th[:s],
-                                  'b',
-                                  self.voltage[:s],
-                                  tn[:s],
-                                  'y',
-                                  linestyle='solid')
-            plt.legend([t1, t2, t3], [r'$\tau_m$', r'$\tau_h$', r'$\tau_n$'])
-            plt.suptitle("Time constants for ion channel kinetics")
-            plt.xlabel("Voltage in mV")
-            cam1.snap()
-        cam1.animate(blit=False, interval=50, repeat=True).save('tau.mp4')
+        t1, t2, t3 = plt.plot(self.voltage, tm, 'r',
+                              self.voltage, th, 'b',
+                              self.voltage, tn, 'y',
+                              linestyle='solid')
+        plt.legend([t1, t2, t3], [r'$\tau_m$', r'$\tau_h$', r'$\tau_n$'])
+        plt.suptitle("Time constants for ion channel kinetics")
+        plt.xlabel("Voltage in mV")
 
     def stationary_constants(self):
         """This method creates an animation for the stationary constants
@@ -118,17 +110,13 @@ class Neuron():
         fm = self.finfty(self.am(self.voltage), self.bm(self.voltage))
         fh = self.finfty(self.ah(self.voltage), self.bh(self.voltage))
         fig, ax = plt.subplots(dpi=150)
-        cam2 = Camera(fig)
-        for s in range(len(self.voltage)):
-            f1, f2, f3 = plt.plot(self.voltage[:s], fm[:s], 'r',
-                                  self.voltage[:s], fh[:s], 'b',
-                                  self.voltage[:s], fn[:s], 'y')
-            plt.legend([f1, f2, f3],
-                       [r'$m\infty$', r'$h\infty$', r'$n\infty$'])
-            plt.suptitle("Stationary constants for ion channel kinetics")
-            plt.xlabel("Voltage in mV")
-            cam2.snap()
-        cam2.animate(blit=False, interval=50, repeat=True).save('f_infty.mp4')
+        f1, f2, f3 = plt.plot(self.voltage, fm, 'r',
+                              self.voltage, fh, 'b',
+                              self.voltage, fn, 'y')
+        plt.legend([f1, f2, f3],
+                   [r'$m\infty$', r'$h\infty$', r'$n\infty$'])
+        plt.suptitle("Stationary constants for ion channel kinetics")
+        plt.xlabel("Voltage in mV")
 
     def show_currents(self):
         """This method creates an animation for the 3 currents in our model
@@ -136,28 +124,26 @@ class Neuron():
         """
 
         fig, ax = plt.subplots(dpi=150)
-        cam3 = Camera(fig)
-        for s in range(len(self.voltage)):
-            i1, i2, i3 = plt.plot(self.voltage[:s],
-                                  self.IK()[:s], 'r', self.voltage[:s],
-                                  self.INa()[:s], 'g', self.voltage[:s],
-                                  self.IL()[:s], 'b')
-            plt.legend([i1, i2, i3], [r'$I_{K^+}$', r'$I_{Na^+}$', r'$I_{L}$'])
+        i1, i2, i3 = plt.plot(self.voltage, self.IK(), 'r',
+                              self.voltage, self.INa(), 'g',
+                              self.voltage, self.IL(), 'b')
+        plt.legend([i1, i2, i3], [r'$I_{K^+}$', r'$I_{Na^+}$', r'$I_{L}$'])
 
-            plt.ylim(-200, 500)
-            plt.xlabel("Voltage in mV")
-            plt.ylabel('Current in mA')
-            plt.suptitle("$I-V$ curves in Hudgkin and Huxley Model")
-            cam3.snap()
-        cam3.animate(blit=False, interval=50, repeat=True).save('currents.mp4')
+        plt.ylim(-200, 500)
+        plt.xlabel("Voltage in mV")
+        plt.ylabel('Current in mA')
+        plt.suptitle("$I-V$ curves in Hudgkin and Huxley Model")
 
     def simulate(self, V_init, n_init, m_init, h_init, Tmax, inj=0):
         """This method simulates the H&H model starting from initial conditions
-        given as parameters for a given period of time Tmax, it uses scipy.integrate.solve_ivp()
-        function to solve the system of four differential equations.
+        given as parameters for a given period of time Tmax, it uses
+        scipy.integrate.solve_ivp() function to solve the system of four
+        differential equations.
         """
         def hudgkin_huxley(t, vars):
-            """The four nonlinear differential equations should be wrapped inside a function."""
+            """The four nonlinear differential equations should be wrapped
+            inside a function.
+            """
             V, n, m, h = vars
             return [
                 -self.Gna * m**3 * h * (V - self.Ena) - self.Gk * n**4 *
@@ -184,33 +170,36 @@ class Neuron():
 
         # Now let's start the plotting and the animation process
         fig, axes = plt.subplots(1, 3, figsize=(12, 5), dpi=150)
-        cam4 = Camera(fig)
-        for s in range(len(vt)):
-            l1, = axes[0].plot(tt[:s], vt[:s], 'g', linestyle='solid')
-            axes[0].legend([l1], [r'$V(t)$'])  # V(t) in function of time
 
-            i1, i2, i3 = axes[1].plot(
-                tt[:s],
-                INA[:s],
-                'y',
-                tt[:s],
-                IK[:s],
-                'r',
-                tt[:s],
-                IL[:s],
-                'b',
-                linestyle='solid')  # Currents in fucntion of time
-            axes[1].set_xlabel('Time')
-            axes[1].legend([i1, i2, i3],
-                           [r'$I_{Na^+}$', r'$I_{K^+}$', r'$I_{L}$'])
-            axes[1].set_title("""Hudgkin & Huxley Model Simulation,
-                Initial conditions : $V$ = %s, $n$ = %s, $m$ = %s, $h$ = %s, $T_{max}$ = %s, $I_{injected}$ = %s"""
-                              % (V_init, n_init, m_init, h_init, Tmax, inj))
+        l1, = axes[0].plot(tt, vt, 'g', linestyle='solid')
+        axes[0].legend([l1], [r'$V(t)$'])  # V(t) in function of time
 
-            g1, g2 = axes[2].plot(
-                tt[:s], GNA[:s], 'y', tt[:s], GK[:s], 'r',
-                linestyle='solid')  # Conductances in function of time
-            axes[2].legend([g1, g2], [r'$g_{Na^+}$', r'$g_{K^+}$'])
-            cam4.snap()
-        cam4.animate(blit=False, interval=30,
-                     repeat=True).save('HHsimulation.mp4')
+        i1, i2, i3 = axes[1].plot(tt, INA, 'y',
+                                  tt, IK, 'r',
+                                  tt, IL, 'b',
+                                  linestyle='solid') # Currents in fucntion of time
+        axes[1].set_xlabel('Time')
+        axes[1].legend([i1, i2, i3],
+                       [r'$I_{Na^+}$', r'$I_{K^+}$', r'$I_{L}$'])
+        axes[1].set_title("""Hudgkin & Huxley Model Simulation,
+            Initial conditions : $V$ = %s, $n$ = %s, $m$ = %s, $h$ = %s, $T_{max}$ = %s, $I_{injected}$ = %s"""
+                          % (V_init, n_init, m_init, h_init, Tmax, inj))
+
+        g1, g2 = axes[2].plot(
+            tt, GNA, 'y', tt, GK, 'r',
+            linestyle='solid')  # Conductances in function of time
+        axes[2].legend([g1, g2], [r'$g_{Na^+}$', r'$g_{K^+}$'])
+        
+        def animate(i) :
+            l1.set_data(tt[:i], vt[:i])
+            i1.set_data(tt[:i], INA[:i])
+            i2.set_data(tt[:i], IK[:i])
+            i3.set_data(tt[:i], IL[:i])
+            g1.set_data(tt[:i], GNA[:i])
+            g2.set_data(tt[:i], GK[:i])
+            return l1, i1, i2, i3, g1, g2
+        
+        anim = FuncAnimation(fig, animate, frames=len(tt), interval = 50)
+        anim.save('HRsimulation.mp4', dpi = 150, fps= 30)
+        
+           
