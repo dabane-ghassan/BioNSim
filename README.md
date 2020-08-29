@@ -49,7 +49,7 @@ cell.simulate_fitz_nagu(V_init=-2,w_init=-1.5, I_init=0.5, Tmax=100)
 ## ToDo :
 This project is still in developement.
 
-### Doing the animation with matplotlib instead of celluloid and applying it to the scripts
+### Doing the animation with matplotlib instead of celluloid and applying it to the scripts (DONE)
 ### GUI
 ### Adding more biological models : IKir, Izhikevich model, ......
 
