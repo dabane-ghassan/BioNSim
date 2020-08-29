@@ -41,7 +41,7 @@ class Neuron() :
     def wnull(self, v):
         "w-nullcline of the Fitzugh-Nagumo model"
         return (v + self.a) / self.b
-    
+   
     
     def vdot(self, v, w, I):
         """this function sends back the values of dvdt"""
